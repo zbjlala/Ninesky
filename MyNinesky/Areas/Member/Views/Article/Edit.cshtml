@@ -1,0 +1,129 @@
+﻿@model Ninesky.Models.ArticeModel.CommonModel
+
+@section scripts
+    {
+    <script type="text/javascript" src="~/Scripts/KindEditor/kindeditor-min.js"></script>
+    <script type="text/javascript">
+        //编辑框
+        KindEditor.read(function (K) {
+            window.editor = K.create('#Content', {
+                height: '500px',
+                uploadJson: '@Url.Action("Upload","Attachment")',
+                fileManagerJson: '@Url.Action("FileManagerJson","Attachment",new { id = Model.ModelID})',
+                allowFileManager: true,
+                formatUploadUrl: false;
+            });
+            //首页图片
+            var editor2 = K.editor({
+                fileManagerJson: '@Url.Action("FileManagerJson","Attachment",new { id = Model.ModelID})'
+            });
+            K('#btn_picselect').click(function () {
+                editor2.loadPlugin('filemanager', function () {
+                    editor2.plugin.filemanagerDialog({
+                        viewType: 'VIEW',
+                        dirName: 'image',
+                        clickFn: function (url, title) {
+                            var url;
+                            $.ajax({
+                                type: "post",
+                                url: "@Url.Action("CreateThumbnail","Attachment")",
+                                data: { originalPicture: url },
+                                async: false,
+                                success: function (data) {
+                                    if (data == null) {
+                                        alert("生成缩略图失败！");
+                                    }
+                                    else {
+                                        K('#CommonModel_DefaultPicUrl').val(data);
+                                        K('#imgpreview').attr("src",data);
+                                    }
+                                    editor2.hideDialog();
+                                }
+                            });
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+    }
+
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal" role="form">
+        <h4>添加文章</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.ModelID)
+
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="CommonModel_CategoryID">栏目</label>
+            <div class="col-sm-10">
+                <input id="CommonModel_CategoryID" name="CategoryID" data-ng-model-options="url:'@Url.Action("JsonTree","Category",new { model = "Article"})'"
+                       class="easyui-combotree" style="height:34px;width:280px" value="@Model.CategoryID" />
+                @Html.ValidationMessageFor(model => model.CategoryID)
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Title, new { @class = "control-control" })
+                @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(Model => Model.Article.Author, new { @class = "control-label col-sm-2" })
+            <div class="col-sm-10">
+                @Html.TextBoxFor(Model => Model.Article.Author, new { @class = "form-control" })
+                @Html.ValidationMessageFor(Model => Model.Article.Author)
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(Model => Model.Article.Source, new { @class = "form-label col-sm-2" })
+            <div class="col-sm-10">
+                @Html.TextBoxFor(Model => Model.Article.Source, new { @class = "form-control" })
+                @Html.ValidationMessageFor(Model => Model.Article.Source)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Article.Intro, new { @class = "control-label col-sm-2" })
+            <div class="col-sm-10">
+                @Html.TextAreaFor(model => model.Article.Intro, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Article.Intro)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Article.Content, new { @class = "control-label col-sm-2" })
+            <div class="col-sm-10">
+                @Html.EditorFor(model => model.Article.Content)
+                @Html.ValidationMessageFor(model => model.Article.Content)
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(Model => Model.DefaultPicUrl,new { @class ="control-label col-sm-2"})
+            <div class="col-sm-10">
+                <img id="imgpreview" class="thumbnail" src="@Model.DefaultPicUrl" />
+                @Html.HiddenFor(Model => Model.DefaultPicUrl)
+                <a id="btn_picselect" class="easyui-linkbutton">选择...</a>
+                @Html.ValidationMessageFor(model => model.DefaultPicUrl)
+            </div>
+
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <input type="submit" value="保存" class="btn btn-default" />
+            </div>
+        </div>
+     </div>
+
+        }
+
+        <div>
+            @Html.ActionLink("Back to List", "Index")
+        </div>

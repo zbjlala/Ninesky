@@ -1,0 +1,59 @@
+﻿
+@{
+    ViewBag.Title = "我的咨询";
+}
+
+<div id="toolbar">
+    <div>
+        <a href="#" id="btn_add" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true">进行咨询</a>
+        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-reload',plain:true" onclick="$('#Consultation_List').datagrid('reload');">刷新</a>
+    </div>
+</div>
+<table id="Consultation_List"></table>
+<script src="~/Scripts/Common.js"></script>
+<script src="~/Scripts/jquery.easyui.datagrid.detailview.js"></script>
+<script type="text/javascript">
+    $("#Consultation_List").datagrid({
+        loadMsg: '记载中……',
+        fitColumns: true,
+        pagination: true,
+        singleSelect: true,
+        url: '@Url.Action("MyJsonList","Consultation")',
+        columns: [[
+            { field: 'ModelID', title: 'ID' },
+            { field: 'Title', title: '标题' },
+            { field: 'Inputer', title: '咨询人', align: 'right' },
+            {
+                field: 'ReleaseDate', title: '咨询日期', align: 'right',
+                formatter: function (value, row, index) { return jsonDateFormat(value); }
+            }
+        ]],
+        toolbar: '#toolbar',
+        idField: 'ModelID',
+        view: detailview,
+        detailFormatter: function (rowIndex, rowData) {
+            return '<div class = "detail" style = "padding:5px 0"></div>';
+        },
+        onExpandRow: function (index, row) {
+            var detail = $(this).datagrid('getRowDetail', index).find('div.detail');
+            detail.panel({
+                height: 160,
+                width: $(window).width()-10,
+                border: false,
+                cache: false,
+                href: '@Url.Content("~/Member/Consultation/Index")/' + row.ModelID,
+                onLoad: function () {
+                    $('#Consutation_List').datagrid('fixDetailRowHeight',index);
+                }
+
+            });
+            $('#Consultation_List').datagrid('fixDetailRowHeight', index);
+        }
+
+    });
+    //添加按钮
+    $("#btn_add").click(function () {
+        window.parent.addTab("进行咨询","@Url.Action("Add","Consultation")","icon-page");
+    });
+</script>
+

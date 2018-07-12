@@ -1,0 +1,14 @@
+﻿@model Ninesky.Models.ArticeModel.CommonModel
+
+<div class="easyui-panel" title="修改成功" style="width:500px;text-align:center;">
+    <dl>
+        <dt>@Model.Title 修改成功</dt>
+        <dd><a id="btn_close" href="#" class="easyui-linkbutton">关闭</a></dd>
+    </dl>
+</div>
+<script type="text/javascript">
+    $("#btn_close").click(function () {
+        parent.$("#mainTabs").tabs('close','修改文章');
+    });
+</script>
+

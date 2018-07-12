@@ -1,0 +1,14 @@
+﻿
+@Html.Action("Menu","Article")
+@Html.Action("Menu","Consultation")
+@Html.Action("Menu","User")
+<script type="text/javascript">
+    $("#navmenu a").click(function () {
+        var _optstr = "{" + $(this).attr("data-options") + "}";
+        _optstr = _optstr.replace(/'/g, "\"");
+        var _opts = $.parseJSON(_optstr);
+        addTab(_opts.title, _opts.href, _opts.icons)
+        return false;
+    })
+</script>
+

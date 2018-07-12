@@ -1,0 +1,57 @@
+﻿@model Ninesky.Models.ArticeModel.Consultation
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        <table style="width:100%;font-size:12px;">
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.Name)</th>
+                <td>@Html.DisplayFor(model => model.Name)</td>
+                <th>@Html.DisplayNameFor(model => model.IsPublic)</th>
+                <td>@Html.DisplayFor(model => model.IsPublic)</td>
+            </tr>
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.QQ)</th>
+                <td>@Html.DisplayFor(model => model.QQ)</td>
+                <th>@Html.DisplayNameFor(model => model.Email)</th>
+                <td>@Html.DisplayFor(model => model.Email)</td>
+            </tr>
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.Content)</th>
+                <td colspan="3">@Html.DisplayFor(model => model.Content)</td>
+            </tr>
+            @if(Model.ReplyTime != null)
+            {
+                <tr>
+                    <td colspan="4">
+                        <span>管理员于: @Model.ReplyTime 回复如下</span>
+                        <br/>
+                <p style="margin-top:8px">
+                    @Model.ReplyContent
+                </p>
+
+                    </td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <th>
+                        回复 @Html.HiddenFor(model => model.ConsultationID)
+                        @Html.ValidationMessageFor(model => model.ConsultationID)
+                    </th>
+                    <td colspan="3">
+                        @Html.TextAreaFor(model => model.ReplyContent,new { @class = "form-control"})
+                        @Html.ValidationMessageFor(model => model.ReplyContent)
+                    </td>
+                </tr>
+               <tr>
+                   <th>
+
+                   </th>
+                   <td colspan="3">
+                       <input type="submit" class="btn_reply btn btn-primary" value="确定" />
+                   </td>
+               </tr>
+            }
+        </table>
+    }

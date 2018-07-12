@@ -1,0 +1,129 @@
+﻿
+@section  scripts{
+    <script type="text/javascript" src="~/Scripts/KindEditor/kindeditor-min.js"></script>
+    <script type="text/javascript">
+      //编辑框
+        KindEditor.ready(function (K) {
+            window.editor = K.create('#Article_Content', {
+                height: '500px',
+                //上传地址
+                uploadJson: '@Url.Action("Upload", "Attachment")',
+                //文件管理地址
+                fileManagerJson: '@Url.Action("FileManagerJson", "Attachment")',
+                //启用文件管理
+                allowFileManager: true,
+                formatUploadUrl: false
+            });
+        //首页图片
+            var editor2 = K.editor({
+                fileManagerJson: '@Url.Action("FileManagerJson", "Attachment")'
+            });
+            K('#btn_picselect').click(function () {
+                editor2.loadPlugin('filemanager', function () {
+                    editor2.plugin.filemanagerDialog({
+                        viewType: 'VIEW',
+                        dirName: 'image',
+                        clickFn: function (url, title) {
+                            var url;
+                            $.ajax({
+                                type: "post",
+                                url: "@Url.Action("CreateThumbnail", "Attachment")",
+                                data: { originalPicture: url },
+                                async: false,
+                                success: function (data) {
+                                    if (data == null) alert("生成缩略图失败！");
+                                    else {
+                                        K('#DefaultPicUrl').val(data);
+                                        K('#imgpreview').attr("src", data);
+                                    }
+                                    editor2.hideDialog();
+                                }
+                            });
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+
+    }
+@model Ninesky.Models.ArticeModel.CommonModel
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal" role="form">
+        <h4>添加文章</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="CategoryID">栏目</label>
+            <div class="col-sm-10">
+                <input id="CategoryID" name="CategoryID" data-options="url:'@Url.Action("JsonTree", "Category", new { model="Article" })'" class="easyui-combotree" style="height: 34px; width: 280px;" />
+                @Html.ValidationMessageFor(model => model.CategoryID)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Title, new { @class = "control-label col-sm-2" })
+            <div class="col-sm-10">
+                @Html.TextBoxFor(model => model.Title, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Title)
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Article.Author, new { @class = "control-label col-sm-2" })
+            <div class="col-sm-10">
+                @Html.TextBoxFor(model => model.Article.Author, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Article.Author)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Article.Source, new { @class = "control-label col-sm-2" })
+            <div class="col-sm-10">
+                @Html.TextBoxFor(model => model.Article.Source, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Article.Source)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Article.Intro, new { @class = "control-label col-sm-2" })
+            <div class="col-sm-10">
+                @Html.TextAreaFor(model => model.Article.Intro, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Article.Intro)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Article.Content, new { @class = "control-label col-sm-2" })
+            <div class="col-sm-10">
+                @Html.EditorFor(model => model.Article.Content)
+                @Html.ValidationMessageFor(model => model.Article.Content)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DefaultPicUrl, new { @class = "control-label col-sm-2" })
+            <div class="col-sm-10">
+                <img id="imgpreview" class="thumbnail" src="" />
+                @Html.HiddenFor(model => model.DefaultPicUrl)
+                <a id="btn_picselect" class="easyui-linkbutton">选择…</a>
+                @Html.ValidationMessageFor(model => model.DefaultPicUrl)
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <input type="submit" value="添加" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

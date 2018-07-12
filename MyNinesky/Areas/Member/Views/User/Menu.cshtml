@@ -1,0 +1,9 @@
+﻿<div class="easyui-accordion">
+    <div title="个人管理">
+        <ul id="navmenu" class="nav nav-pills nav-stacked">
+            <li> <a href="javascript:void()" data-options="'icons':'icon-user','title': '修改资料', 'href': '@Url.Action("Details", "User")'"><span class="glyphicon glyphicon-user"> 修改资料</span></a></li>
+            <li> <a href="javascript:void()" data-options="'icons':'icon-key','title': '修改密码', 'href': '@Url.Action("ChangePassword","User")'"><span class="glyphicon glyphicon-check"> 修改密码</span></a></li>
+            <li> <a href="@Url.Action("Logout")"><span class="glyphicon glyphicon-log-out"> 退出登录</span></a></li>
+        </ul>
+    </div>
+</div>

@@ -1,0 +1,72 @@
+﻿@model Ninesky.Models.ArticeModel.CommonModel
+
+@{
+    ViewBag.Title = "进行咨询";
+}
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <h4>进行咨询</h4>
+    <hr/>
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true)
+
+        <div class="form-group">
+            <label class="control-label col-sm-2">类型</label>
+            <div class="col-sm-10">
+                <input id="CategoryID" name="CategoryID" data-options=
+                       "url:'@Url.Action("JsonComboBox","Category",new { model = "Consultation"})',valueField:'CategoryID',
+                       textField:'Name'" class="easyui-combobox" style="height:34px;width:280px;" />
+                @Html.ValidationMessageFor(Model => Model.CategoryID)
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(Model => Model.Title,new { @class ="control-label col-sm-2"})
+            <div class="col-sm-10">
+                @Html.TextBoxFor(Model => Model.Title,new { @class = "form-control"})
+                @Html.ValidationMessageFor(Model => Model.Title)
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(Model => Model.Consultation.Name,new { @class = "control-label col-sm-2"})
+            <div class="col-sm-10">
+                @Html.TextBoxFor(Model => Model.Consultation.Name,new { @class = "form-control",@readonly = "readonly"})
+                @Html.ValidationMessageFor(Model => Model.Consultation.Name)
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(Model => Model.Consultation.QQ,new { @class = "control-label col-sm-2"})
+            <div class="col-sm-10">
+                @Html.TextBoxFor(Model => Model.Consultation.QQ,new { @class = "form-control"})
+                @Html.ValidationMessageFor(Model => Model.Consultation.QQ)
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(Model => Model.Consultation.IsPublic,new { @class = "control-label col-sm-2"})
+            <div class="col-sm-10">
+                @Html.RadioButtonFor(Model => Model.Consultation.IsPublic,false)仅自己查看
+                @Html.ValidationMessageFor(Model => Model.Consultation.IsPublic);
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(Model => Model.Consultation.Email,new { @class ="control-label col-sm-2"})
+            <div class="col-sm-10">
+                @Html.TextBoxFor(Model => Model.Consultation.Email,new { @class = "form-control"})
+                @Html.ValidationMessageFor(Model => Model.Consultation.Email)
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(Model => Model.Consultation.Content,new { @class = "control-label col-sm-2"})
+            <div class="col-sm-10">
+                @Html.TextAreaFor(Model => Model.Consultation.Content,new { @class = "form-control"})
+                @Html.ValidationMessageFor(Model => Model.Consultation.Content)
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <input type="submit" value="提交" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+

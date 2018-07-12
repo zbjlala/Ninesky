@@ -1,0 +1,104 @@
+﻿
+<div id="toolbar">
+    <div>
+        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="edit()">修改</a>
+        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="del()">删除</a>
+        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-reload',plain:true"
+           onclick="$('#article_list').datagrid('reload');">刷新</a>
+    </div>
+    <div class="form-inline">
+        <label>栏目</label>
+        <input id="combo_category" 
+        data-options="url:'@Url.Action("JsonTree","Category",new { model="Article"})'" 
+               class="easyui-combotree" />
+        <label>标题</label>
+        <input id="textbox_title" class="input-easyui" style="width:280px" />
+        <label>录入人</label>
+        <input id="textbox_inputer" class="input-easyui" />
+        <label>添加日期</label>
+        <input id="datebox_fromdate" type="datetime" class="easyui-datebox" style="width:120px" />
+        <input id="datebox_todate" type="datetime" class="easyui-datebox" style="width:120px" />
+        <a href="#" id="btn_search" data-options="iconCls:'icon-search'" class="easyui-linkbutton">查询</a>
+    </div>
+</div>
+<table id="article_list"></table>
+<script src="~/Scripts/Common.js"></script>
+<script type="text/javascript">
+    $("#article_list").datagrid({
+        loadMsg: '加载中.....',
+        pagination: true,
+        url: '@Url.Action("JsonList","Article")',
+        columns: [[
+            { field: 'ModelID', title: 'ID', checkbox: true },
+            { field: 'CategoryName', title: "栏目" },
+            { field: 'Title', title: '标题' },
+            { field: 'Inputer', title: '录入', align: 'right' },
+            { field: 'Hits', title: '点击', align: 'right' },
+            {
+                field: 'ReleaseDate', title: '发布日期', align: 'right',
+                formatter: function (value, row, index) { return jsonDateFormat(value); }
+            },
+            { field: 'StatusString',title: '状态',width: 100, align:'right'}
+        ]],
+        toolbar: '#toolbar',
+        idField: 'ModelID',
+        onDblClickRow: function (rowIndex, rowData) {
+            window.parent.addTab("修改文章", "@Url.Action("Edit","Article")/" + rowData.ModelID,"icon-page");
+        }
+    });
+    $("#btn_search").click(function () {
+        $("#article_list").datagrid('load', {
+            title: $("#textbox_title").val(),
+            input: $("#textbox_inputer").val(),
+            category: $("#combo_category").combotree('getValue'),
+            fromDate: $("#datebox_fromdate").datebox('getValue'),
+            toDate: $("datebox_todate").datebox('getValue')
+        });
+    });
+    function edit() {
+        var rows = $("#article_list").datagrid("getSelections");
+        if (!rows || rows.length < 1) {
+            $.messager.alert("提示", "请选择要修改的行!");
+            return;
+        }
+        else if (rows.length != 1) {
+            $.messager.alert("提示", "仅能选择一行!");
+            return;
+        }
+        else {
+            window.parent.addTab("修改文章", "@Url.Action("Edit","Article")/" + rows[0].ModelID, "icon-page");
+        }
+    }
+        // 删除
+        function del() {
+            var rows = $("#article_list").datagrid("getSelections");
+            if (!rows || rows.length < 1) {
+                $.messager.alert("提示", "未选择任何行!");
+                return;
+            }
+            else if (rows.length > 0) {
+                $.messager.confirm("确认", "您确定要删除所选行吗?", function (r) {
+                    if (r) {
+                        $.messager.progress();
+                        $.each(rows, function (index, value) {
+                            $.ajax({
+                                type: "post",
+                                url: "@Url.Action("Delete","Article")",
+                                data: { id: value.ModelID },
+                                async: false,
+                                success: function (data) {
+
+                                }
+                            });
+                        });
+                        $.messager.progress('close');
+                        //清楚选择行
+                        rows.length = 0;
+                        $("#article_list").datagrid('reload');
+                    }
+                });
+                return;
+            }
+       }
+</script>
+

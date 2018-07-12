@@ -1,0 +1,72 @@
+﻿@{ 
+    ViewBag.Title = "咨询管理";
+}
+<div id="toolbar">
+    <div>
+        <a href="#" class="easyui-linkbutton" data-options ="iconCls:'icon-remove',plain:true" onclick="del()">删除</a>
+        <a href="#" class="easyui-linkbutton" data-options ="iconCls:'icon-reload',plain:true" onclick="$('#Consultation_List').dtagrid('reload');">刷新</a>
+    </div>
+</div>
+<table id="Consultation_List"></table>
+<script src="~/Scripts/Common.js"></script>
+<script src="~/Scripts/jquery.easyui.datagrid.detailview.js"></script>
+<script type="text/javascript">
+    $("#Consultation_List").datagrid({
+        loadMsg: '加载中……',
+        fitColumns: true,
+        pagination: true,
+        url: '@Url.Action("ManageJsonList","Consultation")',
+        columns: [[
+            { field: 'ModelID', title: 'ID', checkbox: true },
+            { field: 'Title', title: '标题' },
+            { field: 'Inputer', title: '咨询人', align: 'right' },
+            {
+                field: 'ReleaseDate', title: '咨询日期', align: 'right',
+                formatter: function (value, row, index) { return jsonDateFormat(value); }
+            },
+            {field: 'StatusString',title: '状态',width: 100,align: 'right'}
+        ]],
+        toolbar: '#toolbar',
+        idField: 'ModelID',
+        view: detailview,
+        detailFormatter: function (rowIndex, rowData)
+        { return '<div class="detail" style = "width:100%,padding:5px 0"></div>' },
+        onExpandRow: function (index, row) {
+            var detail = $(this).datagrid('getRowDetail', index).find('div.detail');
+            $(detail).html("<iframe frameborder='0' marginwidth='0' height='160px' width='100%' src='@Url.Action("Reply","Consultation")/" + row.ModelID + " '></iframe>");
+            $('#Consultation_List').datagrid('fixDetailRowHeight', index);
+        }
+    });
+    //删除
+    function del() {
+        var rows = $("#Consultation_List").datagrid("getSelections");
+        if (!rows || rows.length < 1) {
+            $.messager.alert("提示", "未选择任何行!");
+            return;
+        }
+        else if (rows.length > 0) {
+            $.messager.confirm("确认", "您确定要删除所选行吗?", function (r) {
+                if (r) {
+                    $.messager.progress();
+                    $.each(rows, function (index, value) {
+                        $.ajax({
+                            type: "post",
+                            url: "@Url.Action("Delete","Consultation")",
+                            data: { id: value.ModelID },
+                            async: false,
+                            success: function (data) {
+
+                            }
+                        });
+                    });
+                    $.messager.progress('close');
+                    //清除选择行
+                    rows.length = 0;
+                    $("#Consultation_List").datagrid('reload');
+                }
+            });
+            return;
+        }
+    }
+</script>
+

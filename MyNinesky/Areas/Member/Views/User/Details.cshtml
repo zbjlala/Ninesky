@@ -1,0 +1,51 @@
+﻿@model Ninesky.Models.User
+ @using (Html.BeginForm("Modify", "User"))
+   {
+            @Html.AntiForgeryToken()
+            <div class="form-horizontal">
+                <h4>我的资料</h4>
+                <hr/>
+                @Html.ValidationSummary(true);
+                @Html.HiddenFor(model => model.UserID)
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.UserName,new { @class = "control-label col-md-2"})
+                    <div class="col-md-10">
+                        @Html.DisplayFor(model => model.UserName)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DisplayName,new { @class = "control-label col-md-2"})
+                    <div  class="col-md-10">
+                        @Html.EditorFor(model => model.DisplayName)
+                        @Html.ValidationMessageFor(model => model.DisplayName)
+                    </div>
+                </div>
+                @*<div class="form-group">
+                    <label class="control-label col-md-2">用户组</label> 
+                    <div class=" col-md-10">
+                        @foreach (var _relation in Model.UserRoleRelations)
+                        {
+                            <span>@_relation.Role.Name</span><br/>
+                        }
+                        
+                    </div>
+                </div>*@
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Email,new { @class = "class = control-label col-md-2"})
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Email)
+                        @Html.ValidationMessageFor(model => model.Email);
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="修改" class="btn btn-default" />
+                    </div>
+                </div>
+            </div>
+   }
+
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    }

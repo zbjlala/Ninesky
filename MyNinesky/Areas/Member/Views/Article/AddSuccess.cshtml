@@ -1,0 +1,12 @@
+﻿@model Ninesky.Models.ArticeModel.CommonModel
+    <div class="easyui-panel" title="添加成功" style="width:500px;text-align:center;">
+        <dl>
+            <dt>@Model.Title 添加成功</dt>
+            <dd><a href="@Url.Action("Add","Article")" class="easyui-linkbutton">继续添加</a><a id="btn_close" href="#" class="easyui-linkbutton">关闭</a></dd>
+        </dl>
+    </div>
+<script type="text/javascript">
+    $("#btn_close").click(function () {
+        parent.$("#mainTabs").tabs('close','添加文章');
+    });
+</script>
